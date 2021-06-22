@@ -9,4 +9,8 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
+app.use(function(err, req, res, next) {
+    res.status(400).send(err.message);
+});
+
 app.listen(3000, () => console.log('Server is running...'));
