@@ -1,16 +1,26 @@
 import "reflect-metadata";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
+import "express-async-errors"; // sempre precisa ser depois do express
 import "./database"; // já identifica quando é index.js
 import { router } from "./routes";
 
 // @types/express
 const app = express();
 
+
 app.use(express.json());
 app.use(router);
 
-app.use(function(err, req, res, next) {
-    res.status(400).send(err.message);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof Error) {
+        return res.status(400).json({
+            error: err.message
+        });
+    }
+    return res.status(500).json({
+        status: 'error',
+        message: 'Internal Server error'
+    })
 });
 
 app.listen(3000, () => console.log('Server is running...'));
